@@ -29,6 +29,19 @@ const tbproduto = mongoose.Schema({
 //Contrução do modelo de tabela no mongodb
 const Produto = mongoose.model("produto",tbproduto);
 
+
+// Construção da estrutura da tabela carrinho
+const tbcarrinho = mongoose.Schema({
+    idproduto:String,
+    nomeproduto:String,
+    preco:String,
+    foto:String
+});
+// Criaçã da tabela carrinho
+const Carrinho = mongoose.model("carrinho",tbcarrinho);
+
+
+
 //criação dos endpoints para o modelo produto.
 // Vamos iniciar com a rota para efetuar o cadastro dos produtos
 // Esta rota recebe o verbo POST(Postar os dados do Produto)
@@ -88,6 +101,35 @@ app.get("/produto/nomeproduto/:nome",cors(configCors),(req,res)=>{
     })
 
 });
+
+
+// -------- Criação das rotas para o carrinho
+app.post("/carrinho/adicionar",cors(configCors),(req,res)=>{
+    const dados = new Carrinho(req.body);
+    dados.save().then(()=>{
+        res.status(201).send({rs:"Item adicionado"});
+    }).catch((error)=>console.error(`Ocorreu um erro ao tentar adicionar o item ao carrinho -> ${error}`));
+});
+
+app.get("/carrinho/itens",cors(configCors),(req,res)=>{
+    Carrinho.find((error,dados)=>{
+        if(error){
+            res.status(400).send({rs:`Ocorreu um erro ao tentar listar os itens do carrinho -> ${error}`});
+            return;
+        }
+        res.status(200).send({rs:dados});
+    });
+});
+app.delete("/carrinho/removeritem/:id",cors(configCors),(req,res)=>{
+    Carrinho.findByIdAndDelete(req.params.id,(error,dados)=>{
+        if(error){
+            res.status(400).send({rs:`Ocorreu um erro ao tentar remover este item -> ${error}`});
+            return;
+        }
+        res.status(204).send({rs:'item removido'});
+    });
+});
+
 
 
 app.listen("5000",()=>console.log("Servidor online na porta 5000"));
