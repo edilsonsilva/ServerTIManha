@@ -159,6 +159,10 @@ app.post("/usuario/login",cors(configCors),(req,res)=>{
             res.status(400).send({rs:`Erro ao tentar executar a consulta ${erro}`});
             return;
         }
+        if(dados=="" || dados==null){
+            res.status(404).send({rs:"null"});
+            return;
+        }
         res.status(200).send({rs:dados});
     });
 });
@@ -171,6 +175,17 @@ app.put("/usuario/atualizar/:id",cors(configCors),(req,res)=>{
         }
         res.status(200).send({rs:`Dados atualizados`});
     })
+});
+
+
+app.get("/usuario/listar",cors(configCors),(req,res)=>{
+    Usuario.find((erro,dados)=>{
+        if(erro){
+            res.status(400).send({rs:`Erro ao tentar executar a consulta ${erro}`});
+            return;
+        }
+        res.status(200).send({rs:dados});
+    });
 });
 
 
